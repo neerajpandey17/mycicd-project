@@ -1,17 +1,25 @@
-# HTML
-# Archive your static HTML project and save it with the build record.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+  - main
 
 pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(build.sourcesDirectory)'
-    includeRootFolder: false
-- task: PublishBuildArtifacts@1
+  - task: CopyFilesOverSSH@0
+    inputs:
+      sshEndpoint: 'MyVM-SSH'
+      sourceFolder: '$(Build.SourcesDirectory)'
+      contents: 'index.html'
+      targetFolder: '/var/www/html'
+      cleanTargetFolder: false
+    displayName: 'Copy index.html to VM'
+
+  - task: SSH@0
+    inputs:
+      sshEndpoint: 'MyVM-SSH'
+      runOptions: 'inline'
+      inline: |
+        sudo cp /var/www/html/index.html /var/www/html/index.html
+        sudo systemctl reload nginx
+        echo "Deploy complete! Site live at http://4.247.156.236"
+    displayName: 'Reload nginx on VM'
