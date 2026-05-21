@@ -19,7 +19,6 @@ steps:
       sshEndpoint: 'MyVM-SSH'
       runOptions: 'inline'
       inline: |
-        sudo cp /var/www/html/index.html /var/www/html/index.html
         sudo systemctl reload nginx
         echo "Deploy complete! Site live at http://4.247.156.236"
     displayName: 'Reload nginx on VM'
